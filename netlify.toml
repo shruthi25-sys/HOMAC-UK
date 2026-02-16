@@ -2,8 +2,8 @@
 # Run everything from the frontend app directory
 base = "frontend"
 
-# Standard Next.js build
-command = "npm run build"
+# Install Rust (for lightningcss native build) and then run the Next.js build
+command = "bash -lc 'curl https://sh.rustup.rs -sSf | sh -s -- -y && . $HOME/.cargo/env && npm run build'"
 
 # Next.js output directory (handled by Netlify's Next.js runtime/plugin)
 publish = ".next"
