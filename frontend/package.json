@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "preinstall": "bash -lc 'curl https://sh.rustup.rs -sSf | sh -s -- -y && . $HOME/.cargo/env || true'",
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",

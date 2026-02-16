@@ -2,15 +2,15 @@
 # Run everything from the frontend app directory
 base = "frontend"
 
-# Install Rust (for lightningcss native build) and then run the Next.js build
-command = "bash -lc 'curl https://sh.rustup.rs -sSf | sh -s -- -y && . $HOME/.cargo/env && npm run build'"
+# Standard Next.js build; Rust will be installed via npm preinstall script
+command = "npm run build"
 
 # Next.js output directory (handled by Netlify's Next.js runtime/plugin)
 publish = ".next"
 
 [build.environment]
   # Force lightningcss to build its native binary on Netlify
-  LIGHTNING_CSS_BUILD_FROM_SOURCE = "1"
+  LIGHTNING_CSS_BUILD_FROM_SOURCE = "true"
   # Pin Node version used by Netlify (Next.js 16 requires >=20.9.0)
   NODE_VERSION = "20.9.0"
 
