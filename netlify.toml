@@ -11,8 +11,8 @@ publish = ".next"
 [build.environment]
   # Force lightningcss to build its native binary on Netlify
   LIGHTNING_CSS_BUILD_FROM_SOURCE = "1"
-  # (Optional but recommended) pin Node version used by Netlify
-  NODE_VERSION = "18"
+  # Pin Node version used by Netlify (Next.js 16 requires >=20.9.0)
+  NODE_VERSION = "20.9.0"
 
 [functions]
 node_bundler = "esbuild"
