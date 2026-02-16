@@ -1,5 +1,5 @@
 // Client-side auth store using Fetch API
-import { API_URL } from "./utils" // Make sure this exists or hardcode
+import { API_URL } from "./utils"
 
 export interface User {
   id: string
@@ -14,8 +14,8 @@ export interface User {
 const AUTH_KEY = "homac_auth_user"
 const TOKEN_KEY = "homac_auth_token"
 
-// Explicit define API URL if import fails
-const BASE_URL = "http://localhost:3001/api"
+// Base URL for backend API (configured via NEXT_PUBLIC_API_URL or defaults in utils)
+const BASE_URL = API_URL
 
 export function getStoredUser(): User | null {
   if (typeof window === "undefined") return null

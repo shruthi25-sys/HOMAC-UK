@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button"
 import { Navbar } from "@/components/navigation/navbar"
 import { Footer } from "@/components/footer/footer"
 import CardSwap, { Card } from "@/components/card-swap/card-swap"
+import { API_URL } from "@/lib/utils"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -141,7 +142,7 @@ export default function Home() {
   useEffect(() => {
     const loadTestimonials = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/testimonials?status=approved`)
+        const res = await fetch(`${API_URL}/testimonials?status=approved`)
         if (res.ok) {
           const json = await res.json()
           const featured = json.filter((t: any) => t.featured).map((t: any) => ({

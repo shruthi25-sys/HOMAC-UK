@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Navbar } from "@/components/navigation/navbar"
 import { Footer } from "@/components/footer/footer"
+import { API_URL } from "@/lib/utils"
 
 const infoSections = [
   {
@@ -780,10 +781,6 @@ export default function Franchise() {
                   }
 
                   try {
-                    // Import directly from utils if possible, hardcoding for safety if import fails here
-                    // import { API_URL } from "@/lib/utils"
-                    const API_URL = "http://localhost:3001/api"
-
                     const res = await fetch(`${API_URL}/franchise`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },

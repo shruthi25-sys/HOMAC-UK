@@ -57,9 +57,15 @@ Create `.env.local` for development:
 
 ```
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
 ADMIN_SECRET=your_secret_here
 DATABASE_URL=your_database_connection
 ```
+
+In Vercel, set at least:
+
+- `NEXT_PUBLIC_APP_URL=https://your-vercel-domain.vercel.app`
+- `NEXT_PUBLIC_API_URL=https://your-backend-domain.com/api`
 
 ## Database Setup
 

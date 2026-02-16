@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Navbar } from "@/components/navigation/navbar"
 import { Footer } from "@/components/footer/footer"
 import { useToast } from "@/components/ui/use-toast"
+import { API_URL } from "@/lib/utils"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -142,8 +143,6 @@ export default function Contact() {
                     }
 
                     try {
-                      // Hardcoded for now, or import from utils
-                      const API_URL = "http://localhost:3001/api"
                       const res = await fetch(`${API_URL}/enquiries`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
