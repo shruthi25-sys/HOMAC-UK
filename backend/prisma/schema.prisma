@@ -1,0 +1,301 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Enums
+enum UserRole {
+  student
+  parent
+  admin
+}
+
+enum AdminRole {
+  super_admin
+  admin
+  manager
+}
+
+enum UserStatus {
+  active
+  inactive
+  suspended
+}
+
+enum CourseCategory {
+  beginner
+  intermediate
+  advanced
+  plus11
+}
+
+enum CourseStatus {
+  active
+  inactive
+  archived
+}
+
+enum EnrollmentStatus {
+  active
+  completed
+  paused
+  cancelled
+}
+
+enum EnquiryStatus {
+  new
+  contacted
+  in_progress
+  converted
+  closed
+}
+
+enum EnquiryPriority {
+  low
+  medium
+  high
+}
+
+enum FranchiseStatus {
+  pending
+  reviewing
+  approved
+  rejected
+  withdrawn
+}
+
+enum CMSType {
+  hero
+  text
+  features
+  cta
+  testimonials
+  gallery
+  faq
+  contact
+  custom
+}
+
+model User {
+  id              String       @id @default(uuid())
+  email           String       @unique
+  password        String
+  firstName       String
+  lastName        String
+  phone           String?
+  role            UserRole     @default(parent) // Defaults to parent as per guide
+  status          UserStatus   @default(active)
+  enrolledCourses String[]     // Keeping simple array or use Relation
+  enrollments     Enrollment[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  // Backward compatibility alias until migration complete
+  // name            String?  // Removed to enforce firstName/lastName usage
+}
+
+model AdminUser {
+  id          String      @id @default(uuid())
+  email       String      @unique
+  password    String
+  firstName   String
+  lastName    String
+  role        AdminRole   @default(manager)
+  permissions String[]
+  status      UserStatus  @default(active)
+  lastLogin   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Course {
+  id               String          @id @default(uuid())
+  title            String
+  description      String?
+  shortDescription String?
+  slug             String          @unique
+  category         CourseCategory  @default(beginner)
+  level            String?
+  duration         String?
+  price            Decimal?
+  image            String?
+  instructor       String?
+  totalStudents    Int             @default(0)
+  rating           Decimal         @default(4.5)
+  features         String[]
+  status           CourseStatus    @default(active)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  modifiedBy       String?
+  modules          CourseModule[]
+  enrollments      Enrollment[]
+}
+
+model CourseModule {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  lessons     Int?
+  duration    String?
+  orderIndex  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Enrollment {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId         String
+  course           Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status           EnrollmentStatus @default(active)
+  progress         Int              @default(0)
+  startDate        DateTime         @default(now())
+  completedDate    DateTime?
+  lastAccessedDate DateTime?
+  notes            String?
+}
+
+model Enquiry {
+  id           String          @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String
+  phone        String?
+  enquiryType  String?
+  message      String
+  source       String          @default("website")
+  status       EnquiryStatus   @default(new)
+  priority     EnquiryPriority @default(medium)
+  assignedTo   String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  
+  // Relations
+  notes        EnquiryNote[]
+
+  // Backward compat
+  // name, type, subject fields were removed to align with guide 
+  // Map these in code if needed
+}
+
+model EnquiryNote {
+  id        String   @id @default(uuid())
+  content   String
+  author    String
+  createdAt DateTime @default(now())
+  enquiryId String
+  enquiry   Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+}
+
+model FranchiseApplication {
+  id               String          @id @default(uuid())
+  firstName        String
+  lastName         String
+  email            String
+  phone            String
+  businessName     String?
+  location         String
+  preferredArea    String?
+  investmentAmount String?
+  experience       String?
+  motivation       String?
+  status           FranchiseStatus @default(pending)
+  assignedTo       String?
+  reviewDate       DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  notes            FranchiseNote[]
+  // Removed applicantName to use firstName/lastName
+}
+
+model FranchiseNote {
+  id           String               @id @default(uuid())
+  content      String
+  author       String
+  createdAt    DateTime             @default(now())
+  franchiseId  String
+  franchise    FranchiseApplication @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
+}
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  name      String
+  role      String?
+  content   String
+  rating    Int      @default(5)
+  image     String?
+  featured  Boolean  @default(false)
+  status    String   @default("pending") // Using string for simple pending/approved
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CMSPage {
+  id             String       @id @default(uuid())
+  slug           String       @unique
+  title          String
+  description    String?
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String[]
+  status         String       @default("draft")
+  lastModifiedBy String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  version        Int          @default(1)
+  sections       CMSSection[]
+}
+
+model CMSSection {
+  id          String   @id @default(uuid())
+  pageId      String
+  page        CMSPage  @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  sectionType CMSType
+  title       String?
+  content     String?
+  data        Json?
+  orderIndex  Int
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  tableName String
+  recordId  String?
+  userId    String?
+  oldValues Json?
+  newValues Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+}
+
+model MediaAsset {
+  id         String   @id @default(uuid())
+  name       String
+  assetType  String   @default("image") // Keeping string to simplify for now or use enum
+  url        String
+  size       Int // BigInt might be better but Int is fine for typical web assets
+  mimeType   String?
+  uploadedBy String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Gallery / Memory Lane fields
+  isGallery   Boolean  @default(false)
+  galleryYear Int?
+  title       String?
+  caption     String?
+  location    String?
+  orderIndex  Int      @default(0)
+}
