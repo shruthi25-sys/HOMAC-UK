@@ -1,0 +1,17 @@
+[build]
+# Run everything from the frontend app directory
+base = "frontend"
+
+# Standard Next.js build
+command = "npm run build"
+
+# Next.js output directory (handled by Netlify's Next.js runtime/plugin)
+publish = ".next"
+
+[functions]
+node_bundler = "esbuild"
+
+[[plugins]]
+package = "@netlify/plugin-nextjs"
+
+
